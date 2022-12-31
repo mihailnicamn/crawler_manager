@@ -7,5 +7,5 @@
 - run `npm install`
 - set your username and password in .env file
 - run `npm start`
-- open [http://<<ip>>:<<port>>](http://<<ip>>:<<port>>) | (default) [http://localhost:3000](http://localhost:3000)
+- open [http://{{ip}}:{{port}}](http://{{ip}}:{{port}}) | (default) [http://localhost:3000](http://localhost:3000)
 - it will allow you build puppeteer scripts with test runs, schedule them and run them on a server
