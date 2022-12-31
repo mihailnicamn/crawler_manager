@@ -1,0 +1,35 @@
+
+name : test
+url : 
+    - main : "https://www.google.com/{{sub}}" # main url
+    - sub : 
+        - "test1" # sub url 1
+        - "test2" # sub url 2
+        - "test3" # sub url 3
+flow :
+    # js native
+    - define :
+        key : "test" # key to save data
+        value : "1" # value to save
+        type : "number" # string, number, boolean
+    - set : 
+        key : "test" # key to save data
+        value : "test" # value to save
+        type : "string" # string, number, boolean
+    # puppeteer
+    - click : "#test" # selector
+    - wait : 1000 # miliseconds
+    - pageSave : 
+        key : "test" # key to save data
+        selector : "test"
+        data : "test" # class, id, name, tag, text, value
+    - save :
+        key : "test" # key to save data
+        from : "test" # from already defined key
+    - write :
+        keyword : "test" # keyword to input
+    - inject :
+        script : "test" # script to inject
+    - evaluate :
+        script : "test" # script to evaluate
+        return : "test" # return value to defined key
