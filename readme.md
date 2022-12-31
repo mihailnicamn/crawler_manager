@@ -1,8 +1,8 @@
-#Browser Version 🌍
+# Browser Version 🌍
 - available at: [https://mihailnicamn.github.io/crawler_manager/](https://mihailnicamn.github.io/crawler_manager/)
 - it will allow you build puppeteer scripts, you'll need to download it and run it locally
 
-#Full Environment 💻
+# Full Environment 💻
 - clone this repo
 - run `npm install`
 - set your username and password in .env file
