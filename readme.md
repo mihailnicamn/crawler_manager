@@ -3,6 +3,7 @@
 - it will allow you build puppeteer scripts, you'll need to download it and run it locally
 
 # Full Environment 💻
+## if you're running it on a server that do not persist data use database connectors (default storage is file system)
 - clone this repo
 - run `npm install`
 - set your username and password in .env file
