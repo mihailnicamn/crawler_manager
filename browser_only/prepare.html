@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <title>Crawler Manager</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/dist/css/codemirror.css" rel="stylesheet">
+  <link href="assets/dist/css/ayu-dark.css" rel="stylesheet">
+
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
+      }
+    }
+  </style>
+
+  <style>
+
+    .loader {
+      height: 5%;
+      aspect-ratio: 100;
+      --c: no-repeat repeating-linear-gradient(90deg, rgb(255, 255, 255) 0 20%, #0000 0 40%);
+      background:
+        var(--c) 50% 0,
+        var(--c) 50% 100%;
+      background-size: calc(500%/6) 50%;
+      animation: b10 1s infinite linear;
+    }
+
+    @keyframes b10 {
+      33% {
+        background-position: 0 0, 100% 100%
+      }
+
+      66% {
+        background-position: 0 100%, 100% 0
+      }
+
+      100% {
+        background-position: 50% 100%, 50% 0
+      }
+    }
+  </style>
+
+  <!-- Custom styles for this template -->
+  <link href="assets/dist/css/cover.css" rel="stylesheet">
+  <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/dist/js/javascript.js"></script>
+  <script src="assets/dist/js/app.js"></script>
+  <script src="assets/dist/js/codemirror.js"></script>
+
+  <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+    crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.7/beautify.min.js"></script>
+</head>
+
+<body class="d-flex h-100 text-white bg-dark">
+
+  <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="mb-auto text-center">
+      <div>
+        <h5 class="float-md-start mb-0"><a class="nav-link text-white" href="index.html">Manager 👨‍💼</a></h5>
+        <nav class="nav nav-masthead justify-content-center float-md-end">
+          <a class="nav-link active" aria-current="page" href="prepare.html">Prepare 👨‍🍳</a>
+          <a class="nav-link" href="crawlers.html">Crawlers 🕵️‍♂️</a>
+          <a class="nav-link" href="workers.html">Workers 👷‍♂️</a>
+          <a class="nav-link" href="#">Settings 👨‍🔧</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="px-3">
+      <h1 class=" text-center">Prepare New Recipe</h1>
+      <p class="lead" id="config_description"></p>
+      <p class="lead">
+      <form class=" text-center">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="name_label">Name</span>
+          </div>
+          <input type="text" class="form-control" name="name" placeholder="My Crawler" aria-label="name_label"
+            aria-describedby="name_label">
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="url_label">URL</span>
+          </div>
+          <input name="url" type="text" class="form-control" data-bs-toggle="tooltip" data-bs-html="true"
+            title="<em>Use</em> <b>{{sub}}</b> <em>for multiple page placeholder </br></br> Or nothing if its only 1 URL</em> "
+            placeholder="https://target.url/{{sub}}" aria-label="url_label" aria-describedby="url_label">
+        </div>
+        <div id="sub_inputs">
+
+        </div>
+        <button type="button" class="btn btn-cammo text-white btn-sm w-100 addSub">Add Sub</button>
+        <div class="btn-group w-100 configOPTIONS mt-3" role="group" aria-label="Flow Options">
+          <button type="button" class="btn btn-sm btn-cammo text-white createCONFIG">Config (YAML)</button>
+          <button type="button" class="btn btn-sm btn-cammo text-white importJS">JavaScript</button>
+        </div>
+      </form>
+      <div class="editorJS">
+        <button type="button" class="btn btn-sm btn-cammo w-100 text-white mt-3 mb-2 proJS" data-bs-toggle="tooltip" data-bs-html="true"
+        title="Write your own entire js worker </br> running it will install any dependences you require" >Advanced ⚡️</button>
+        <textarea class="text-left" id="js_editor"></textarea>
+        <textarea class="text-left" id="js_pro_editor"></textarea>
+        <button type="button" class="btn btn-sm btn-cammo w-100 text-white formatJS">Format 📋</button>
+        <button type="button" class="btn btn-sm btn-cammo w-100 text-white runJS">Test Run 🏃‍♂️</button>
+      </div>
+      <div class="editorCONFIG">
+        <textarea class="text-left" id="config_editor"></textarea>
+        <button type="button" class="btn btn-sm btn-cammo w-100 text-white runCONFIG">Test Run 🏃‍♂️</button>
+      </div>
+      <div class="loader-wrapper">
+        <textarea class="text-left" id="console-output"></textarea>
+        <div class="loader"></div>
+        <textarea class="text-left" id="run-result"></textarea>
+      </div>
+      </p>
+    </main>
+
+    <footer class="text-center mt-auto text-white-50">
+      <p>Made with <svg viewBox="0 0 1792 1792" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg"
+          style="height: 0.8rem;">
+          <path
+            d="M896 1664q-26 0-44-18l-624-602q-10-8-27.5-26T145 952.5 77 855 23.5 734 0 596q0-220 127-344t351-124q62 0 126.5 21.5t120 58T820 276t76 68q36-36 76-68t95.5-68.5 120-58T1314 128q224 0 351 124t127 344q0 221-229 450l-623 600q-18 18-44 18z"
+            fill="#e25555"></path>
+        </svg> by <a href="http://github.com/mihailnicamn">github.com/mihailnicamn</a><br> using <a
+          href="https://getbootstrap.com/docs/5.0/getting-started/introduction/">Bootstrap v5</a> and <a
+          href="https://pptr.dev/">Puppeteer</a></p>
+    </footer>
+  </div>
+
+  <script>
+    window.app.prepare().init();
+  </script>
+
+
+</body>
+
+</html>
