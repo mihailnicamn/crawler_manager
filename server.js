@@ -1,5 +1,7 @@
 const server = require("express")
 const app = server()
+require('dotenv').config()
+const db = require("./db")
 const port = process.env.PORT || 3000
 
 const basicAuth = require('express-basic-auth')
@@ -16,6 +18,14 @@ const create = (crawler) => {
     app.post(`${url}/config`, (req, res) => {
         res.send("create")
     })
+    app.post(`${url}/test/start`, (req, res) => {
+        crawler.testRun(req.body, console.log);
+        res.send("create")
+    });
+    app.post(`${url}/test/stop`, (req, res) => {
+        crawler.testStop();
+        res.send("create")
+    });
 }
 const control = (crawler) => {
     const url = '/app/control'
@@ -40,11 +50,29 @@ const control = (crawler) => {
     });
 }
 const main = (crawler) => {
-    app.use(require("body-parser").text())
+    app.use(require("body-parser").json())
     app.use(server.static("ui"))
     const url = '/app'
     app.post(`${url}/list`, (req, res) => {
         res.send("main")
+    })
+}
+const settings = (crawler) => {
+    app.post('/update', (req, res) => {
+        const key = req.query.key
+        const value = req.query.value
+        console.log({
+            key,
+            value
+        })
+        if(crawler.updateENV(key, value)) res.send("updated")
+        else res.send("error")
+    })
+    app.post('/db_types', (req, res) => {
+        res.send(db.types)
+    })  
+    app.post('/environment', (req, res) => {
+        res.send(crawler.readENV())
     })
 }
 const server_module = {
@@ -52,6 +80,7 @@ const server_module = {
         main(crawler)
         create(crawler)
         control(crawler)
+        settings(crawler)
         app.listen(port, () => {
             console.log(`crawler manager interface http://localhost:${port}`)
         })

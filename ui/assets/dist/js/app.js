@@ -1,6 +1,7 @@
 const crawlers = () => {
     const load_table = () => {
         window.table = $('#my_crawlers').DataTable({
+    responsive: true,
             "columnDefs": [
                 { "className": "dt-center", "targets": "_all" }
             ],
@@ -16,9 +17,17 @@ const crawlers = () => {
         });
     }
     const init = () => {
-        $(document).ready(function () {
             load_table();
+            $('.dtsb-dropDown').removeClass('btn-light').addClass('btn btn-cammo').addClass('text-white');
+            $('.dtsb-button').removeClass('btn-light').addClass('btn btn-cammo').addClass('text-white');
+            $('dtsb-button').removeClass('btn-light').addClass('btn btn-cammo').addClass('text-white');
+        
+        $(document).bind('DOMSubtreeModified', function () {
+            $('.dtsb-dropDown').removeClass('btn-light').addClass('btn btn-cammo').addClass('text-white');
+            $('.dtsb-button').removeClass('btn-light').addClass('btn btn-cammo').addClass('text-white');
+            $('dtsb-button').removeClass('btn-light').addClass('btn btn-cammo').addClass('text-white');
         });
+
     }
     return {
         init: init,
@@ -30,8 +39,10 @@ const crawlers = () => {
 const prepare = () => {
     window.editors = {
         js: `// this will run after the page is loaded using puppeteer\n// "page" variable keeps the loaded page\npage.click("element")`,
-        pro_js: `try {const puppeteer = require('puppeteer');\n const browser = await puppeteer.launch();\n const page = await browser.newPage();\n await page.goto('https://example.com');\n await browser.close();}\ncatch (error) {\n process.send({error: error});\n}`,
-        yaml: `# this will run after the page is loaded using puppeteer\n# \"page\" variable keeps the loaded page\n- define :\n    key : "test" # key to save data\n    value : "1" # value to save\n    type : "number" # string, number, boolean\n- set : \n    key : \"test\" # key to save data\n    value : \"test\" # value to save\n    type : \"string\" # string, number, boolean\n# puppeteer\n- click : \"#test\" # selector\n- wait : 1000 # miliseconds\n- pageSave : \n    key : \"test\" # key to save data\n    selector : \"test\"\n    data : \"test\" # class, id, name, tag, text, value\n- save :\n    key : \"test\" # key to save data\n    from : \"test\" # from already defined key\n- write :\n    keyword : \"test\" # keyword to input\n- inject :\n    script : \"test\" # script to inject\n- evaluate :\n    script : \"test\" # script to evaluate\n    return : \"test\" # return value to defined key`
+        pro_js: `try {const puppeteer = require('puppeteer');\n const browser = await puppeteer.launch();\n const page = await browser.newPage();\n await page.goto(global.scraper.base_url);\n await browser.close();}\ncatch (error) {\n process.send({error: error});\n}`,
+        yaml: `# this will run after the page is loaded using puppeteer\n# \"page\" variable keeps the loaded page\n- define :\n    key : "test" # key to save data\n    value : "1" # value to save\n    type : "number" # string, number, boolean\n- set : \n    key : \"test\" # key to save data\n    value : \"test\" # value to save\n    type : \"string\" # string, number, boolean\n# puppeteer\n- click : \"#test\" # selector\n- wait : 1000 # miliseconds\n- pageSave : \n    key : \"test\" # key to save data\n    selector : \"test\"\n    data : \"test\" # class, id, name, tag, text, value\n- save :\n    key : \"test\" # key to save data\n    from : \"test\" # from already defined key\n- write :\n    keyword : \"test\" # keyword to input\n- inject :\n    script : \"test\" # script to inject\n- evaluate :\n    script : \"test\" # script to evaluate\n    return : \"test\" # return value to defined key`,
+        console : `Console output `,
+        run: `Run result `,
     }
     const tooltips = () => {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -112,6 +123,7 @@ const prepare = () => {
             window.js_EDITOR.on("change", function () {
                 window.editors.js = window.js_EDITOR.getValue();
             });
+            
         }
         const js_pro_EDITOR = () => {
             window.js_pro_EDITOR = CodeMirror.fromTextArea($('#js_pro_editor')[0], {
@@ -144,7 +156,6 @@ const prepare = () => {
                 matchBrackets: true,
                 readOnly: true
             });
-            window.console_OUTPUT.setValue("Console Output : ");
             window.console_OUTPUT.setOption("theme", "ayu-dark");
             window.console_OUTPUT.setOption("mode", "yaml");
             window.console_OUTPUT.setOption("readOnly", true);
@@ -156,7 +167,6 @@ const prepare = () => {
                 matchBrackets: true,
                 readOnly: true
             });
-            window.run_RESULT.setValue("Run Result : ");
             window.run_RESULT.setOption("theme", "ayu-dark");
             window.run_RESULT.setOption("mode", "yaml");
             window.run_RESULT.setOption("readOnly", true);
@@ -223,25 +233,49 @@ const prepare = () => {
         $('.createCONFIG').on('click', function () {
             hide.js_editor();
             show.config_editor();
+            window.config_EDITOR.setValue(js_beautify(window.config_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
             $('.importJS').addClass('btn-cammo').removeClass('btn-primary');
             $(this).addClass('btn-primary').removeClass('btn-cammo');
         });
         $('.importJS').on('click', function () {
             hide.config_editor();
             show.js_editor();
+
+            window.js_EDITOR.setValue(js_beautify(window.js_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
+            //reload the editor
             $('.createCONFIG').addClass('btn-cammo').removeClass('btn-primary');
             $(this).addClass('btn-primary').removeClass('btn-cammo');
         });
+        $(".format_editor").on('click', function () {
+            window.js_EDITOR.setValue(js_beautify(window.js_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
+            window.js_pro_EDITOR.setValue(js_beautify(window.js_pro_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
+            window.config_EDITOR.setValue(js_beautify(window.config_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
+        });
+        window.console_log = (data) => {
+            window.console_OUTPUT.setValue(window.console_OUTPUT.getValue() + "\n" + data.toString());
+        }
+        window.run_log = (data) => {
+            window.run_RESULT.setValue(window.run_RESULT.getValue() + "\n" + data.toString());
+        }
         $(".runJS").on('click', function () {
+            if($('[name="name]').val() == '' || $('[name="url"]').val() == '') return alert('Please fill in the name and url fields');
             //verify if its hidden
             if ($(".loader").is(":hidden")) {
+                $(window.run_RESULT.getWrapperElement()).show();
                 $(".loader").show();
+                $(".runJS").removeClass('btn-cammo').addClass('btn-primary');
                 if ($(".proJS").hasClass('btn-primary')) {
                     $(window.console_OUTPUT.getWrapperElement()).show();
+                }else{
+                    $(window.console_OUTPUT.getWrapperElement()).hide();
                 }
 
-                $(window.run_RESULT.getWrapperElement()).show();
+                window.run_RESULT.setValue(window.editors.run + $('[name="name"]').val() + `:`);
+                window.console_OUTPUT.setValue(window.editors.console + $('[name="name"]').val() + `:`);
             } else {
+                $(".runJS").removeClass('btn-primary').addClass('btn-cammo');
+                window.run_RESULT.setValue(window.run_RESULT.getValue() + `\nStopped by user`);
+                window.console_OUTPUT.setValue(window.console_OUTPUT.getValue() + `\nStopped by user`);
                 $(".loader").hide();
             }
         });
@@ -250,10 +284,12 @@ const prepare = () => {
                 $(this).addClass('btn-cammo').removeClass('btn-primary');
                 $(window.js_pro_EDITOR.getWrapperElement()).hide();
                 $(window.js_EDITOR.getWrapperElement()).show();
+                window.js_EDITOR.setValue(js_beautify(window.js_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
             } else {
                 $(this).addClass('btn-primary').removeClass('btn-cammo');
                 $(window.js_EDITOR.getWrapperElement()).hide();
                 $(window.js_pro_EDITOR.getWrapperElement()).show();
+                window.js_pro_EDITOR.setValue(js_beautify(window.js_pro_EDITOR.getValue(), { indent_size: 2, space_in_empty_paren: true }));
             }
         });
         js_EDITOR();
@@ -262,14 +298,34 @@ const prepare = () => {
         console_OUTPUT();
         run_RESULT();
     }
+    window.load_template_recipe = (id) => {
+        if(id != undefined) {
+        var template = window.template_recipes.filter(template => template.id == id)[0];
+        $('[name="name"]').val(template.name);
+        $('[name="url"]').val(template.url);
+        window.editors.js = template.script;
+        window.editors.pro_js = template.script;
+    }
+    }
+    //get query params
+    window.queryParameters = {};
+    window.getQueryParams = () => {
+        const full_url = window.location.href;
+        if(full_url.includes('?') == false) return {};
+        full_url.split('?')[1].split('&').forEach(param => {
+            var key = param.split('=')[0];
+            var value = param.split('=')[1];
+            window.queryParameters[key]= value;
+        });
+        return window.queryParameters;
+    }
+    window.load_template_recipe(window.getQueryParams().id);
     const init = () => {
         $('.addSub').hide();
         $(".loader").hide();
-        $(document).ready(function () {
             tooltips();
             form();
             config();
-        });
     }
     return {
         init: init

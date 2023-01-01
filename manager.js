@@ -1,28 +1,8 @@
 const server = require("./server")
 const crawler = require("./crawler")
 
-server.start(crawler)
 
-const testRun = (script_data,handler) => {
-    const files = require("fs");
-    const filename = `./${script_data.name}_testRun.js`
-    const beautify = require("js-beautify").js;
-    var file_content = beautify(script_data.script, { indent_size: 2 });
-    files.writeFileSync(filename, file_content);
-    const { fork } = require('child_process');
-    const child = fork(filename, [], { silent: true });
-    child.on('message', (m) => {
-        handler(m);
-    });
-    child.stderr.on('data', (data) => {
-        handler(data);
-    });
-    child.on('close', (code) => {
-        handler(code);
-        files.rmSync(filename)
-    });
-}
-const installDependencies = (scripts,handler) => {
+const installDependencies = (scripts, handler) => {
     const { spawn } = require('child_process');
     const cmd = `npm install --save ${scripts.join(" ")}`
     const child = spawn(cmd, [], { shell: true, stdio: 'pipe' });
@@ -48,6 +28,42 @@ const getDependeces = (script_data) => {
     }
     return dependencies;
 }
-installDependencies(getDependeces(`require('body-parser');require('express');require('js-beautify');require('js-yaml');require('crypto-js');require('puppeteer');require('node-cron');require('express-basic-auth)`), (data) => {
-    console.log(data)
+
+const testRun = (script_data, handler) => {
+    const files = require("fs");
+    const filename = `./${Math.random()}_testRun.js`
+    const beautify = require("js-beautify").js;
+    var file_content = beautify(script_data.script, { indent_size: 2 });
+    var template = files.readFileSync("./template.js", "utf8");
+    template = template.replace("{{user_script}}", file_content);
+    template = template.replace("{{name}}", script_data.name);
+    template = template.replace("{{url}}", script_data.url);
+    template = template.replace("{{subs}}", script_data.subs);
+    console.log(script_data.script)
+    installDependencies(getDependeces(script_data.script), handler)
+    files.writeFileSync(filename, template);
+    const { fork } = require('child_process');
+    global.test_run = fork(filename, [], { silent: true });
+    global.test_run.on('message', (m) => {
+        handler(m.toString());
+    });
+    global.test_run.stderr.on('data', (data) => {
+        handler(data.toString());
+    });
+    global.test_run.stdout.on('data', (data) => {
+        handler(data.toString());
+    });
+    global.test_run.on('close', (code) => {
+        handler(code.toString());
+        files.rmSync(filename)
+    });
+}
+const testStop = () => {
+    global.test_run.kill();
+}
+
+server.start({
+    ...crawler,
+    testRun,
+    testStop,
 });

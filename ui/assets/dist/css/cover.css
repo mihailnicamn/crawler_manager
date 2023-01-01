@@ -10,15 +10,26 @@
   color: #333;
   text-shadow: none; /* Prevent inheritance from `body` */
 }
+.tooltip-inner {
+  max-width: 1000px !important; 
+}
 .btn-cammo {
   background-color: #333;
   border-color: #333;
+}
+.btn-cammo:hover {
+  background-color: rgb(122, 121, 121);
+  border-color: rgb(122, 121, 121);
 }
 .input-group-text {
   text-shadow: none; /* Prevent inheritance from `body` */
   background-color: #333;
   border-color: #333;
   color : #fff;
+}
+.paginate_button {
+  text-shadow: none; /* Prevent inheritance from `body` */
+  color: #fff;
 }
 .form-control {
   text-shadow: none; /* Prevent inheritance from `body` */

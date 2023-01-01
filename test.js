@@ -1,71 +1,20 @@
-const puppeteer = require('puppeteer');
-const scrape = async () => {
-  const browser = await puppeteer.launch({
-    headless: false
+const cfg = 
+{name: `My Browser Info 🤖`,
+name_html : `My Browser Info 🤖`,
+url: `https://mybrowserinfo.com/detail.asp`,
+script : `
+await page.waitForSelector('span');
+const result = await page.evaluate(() => {
+  var results = {};
+  const keys = [...document.querySelectorAll('dt')].map((key) => key.innerText);
+  const values = [...document.querySelectorAll('dd')].map((value) => value.innerText);
+  keys.forEach((key, index) => {
+    results[key] = values[index];
   });
-  const page = await browser.newPage();
-
-  await page.goto('https://www.google.com/test1');
-  var returnData = {};
-  var test = parseFloat('1');
-  test = test
-  await page.click('document')
-  await page.waitForTimeout(1000)
-  returnData.test = await page.$(test).test()
-  returnData.test = test
-  await page.type(test)
-  await page.evaluate(async () => {
-    test
-  })
-  returnData.test = await page.evaluate(async () => {
-    return await new Promise(resolve => {
-      test
-    })
-  })
-
-  await page.goto('https://www.google.com/test2');
-  var returnData = {};
-  var test = parseFloat('1');
-  test = test
-  await page.click('document')
-  await page.waitForTimeout(1000)
-  returnData.test = await page.$(test).test()
-  returnData.test = test
-  await page.type(test)
-  await page.evaluate(async () => {
-    test
-  })
-  returnData.test = await page.evaluate(async () => {
-    return await new Promise(resolve => {
-      test
-    })
-  })
-
-  await page.goto('https://www.google.com/test3');
-  var returnData = {};
-  var test = parseFloat('1');
-  test = test
-  await page.click('document')
-  await page.waitForTimeout(1000)
-  returnData.test = await page.$(test).test()
-  returnData.test = test
-  await page.type(test)
-  await page.evaluate(async () => {
-    test
-  })
-  returnData.test = await page.evaluate(async () => {
-    return await new Promise(resolve => {
-      test
-    })
-  })
-  return returnData;
-}
-scrape().then((data) => {
-  const files = require('fs');
-  var crawl_file = files.readFileSync(CRAWL_FILE, 'utf8');
-  crawl_file = JSON.parse(crawl_file);
-  crawl_file.push({
-    "id": new Date().getTime(),
-    "data": data
-  });
+  return results;
 });
+returnResults(result);`
+}
+const files = require("fs");
+const filename = `./${Math.random()}_testRun.js`
+files.writeFileSync(filename, JSON.stringify(cfg));

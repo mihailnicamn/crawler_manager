@@ -63,7 +63,6 @@ const getID = (string) => {
 const find = (id) => {
    return files.readdirSync("./crawlers/config").filter((item) => item.includes(".yml")).filter((item) => getID(item) == id);
 }
-
 const config = {
     save : async (string) => {
         const json = YAML.parse(string);
@@ -104,7 +103,22 @@ const config = {
         if (files.length == 0) throw new Error("Crawler not found");
         const json = YAML.parse(files.readFileSync("./crawlers/config/" + files[0], "utf8"));
         return getHumanReadableDescription(json.flow);
+    },
+    updateENV : (key, value) => {
+        const env = files.readFileSync("./.env", "utf8");
+        const newEnv = env.replace(`${key} = "${process.env[key]}"`, `${key} = "${value}"`);
+        files.writeFileSync("./.env", newEnv);
+    },
+    readENV : () => {
+        require('dotenv').config();
+        const env = files.readFileSync("./.env", "utf8");
+        return env.split("\n").map((item) => {
+            const splited = item.split("=");
+            return {
+                key : splited[0].replaceAll(" ", ""),
+                value : splited[1].replaceAll(/"/g, "").replaceAll(" ", "")
+            }
+        });
     }
 }
-
 module.exports = config;
